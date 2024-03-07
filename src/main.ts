@@ -65,6 +65,13 @@ async function analyzeCode(
   for (const file of parsedDiff) {
     if (file.to === "/dev/null") continue; // Ignore deleted files
     for (const chunk of file.chunks) {
+      const chunkSize = chunk.changes.reduce((acc: any, change: string | any[]) => acc + change.length, 0);
+
+    if (chunkSize > 4000) {
+      console.log(`Chunk size: ${chunkSize}`);
+      console.log('Chunk size exceeds 4000 characters. Skipping processing for this chunk.');
+      continue;
+    }
       const prompt = createPrompt(file, chunk, prDetails);
       const aiResponse = await getAIResponse(prompt);
       if (aiResponse) {
